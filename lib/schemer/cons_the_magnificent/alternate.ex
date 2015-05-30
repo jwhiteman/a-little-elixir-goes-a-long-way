@@ -1,4 +1,4 @@
-defmodule Schemer.Chapter3Alternate do
+defmodule Schemer.ConsTheMagnificent.Alternate do
   def multirember(e, l), do: multirember(e, l, [])
   def multirember(_, [], acc), do: :lists.reverse(acc)
   def multirember(e, [e|t], acc), do: multirember(e, t, acc)

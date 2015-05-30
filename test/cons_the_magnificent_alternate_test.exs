@@ -1,7 +1,7 @@
-defmodule Chapter3AlternateTest do
+defmodule ConsTheMagnificentAlternateTest do
   use ExUnit.Case
 
-  import Schemer.Chapter3Alternate
+  import Schemer.ConsTheMagnificent.Alternate
 
   test "multirember" do
     assert [:coffee, :tea, :and, :hick] ==

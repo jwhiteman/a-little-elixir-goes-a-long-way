@@ -1,7 +1,7 @@
-defmodule Chapter3Test do
+defmodule ConsTheMagnificentTest do
   use ExUnit.Case
 
-  import Schemer.Chapter3
+  import Schemer.ConsTheMagnificent
 
   test "rember" do
     [:lamb, :chops, :and, :jelly] =

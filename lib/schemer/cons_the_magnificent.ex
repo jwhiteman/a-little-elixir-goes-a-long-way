@@ -1,7 +1,11 @@
-defmodule Schemer.Chapter3 do
+defmodule Schemer.ConsTheMagnificent do
 
   @moduledoc """
-  Cons the Magnificent.
+  The Second Commandment: Use cons to build lists.
+
+  The Third Commandment: When building a list, describe
+  the first typical element and then cons it onto the
+  natural recursion.
   """
 
   @doc """
