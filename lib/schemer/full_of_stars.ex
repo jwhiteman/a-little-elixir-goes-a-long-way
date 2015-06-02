@@ -227,6 +227,52 @@ defmodule Schemer.FullOfStars do
   def leftmost([h|_]) when is_atom(h), do: h
   def leftmost([h|_]), do: leftmost(h)
 
+   @doc """
+   (define eqlist?
+     (lambda (l1 l2)
+       (cond
+         ((and (null? l1) (null? l2)) #t)
+         ((or (null? l1) (null? l2)) #f)
+         ((and (atom? (car l1))
+               (atom? (car l2)))
+          (cond
+            ((eq? (car l1) (car l2))
+             (eqlist? (cdr l1) (cdr l2)))
+            (else #f)))
+         ((or (atom? (car l1))
+              (atom? (car l2)))
+          #f)
+         (else
+           (and (eqlist? (car l1) (car l2)) 
+                (eqlist? (cdr l2) (cdr l2)))))))
+
+
+  (eqlist? '(strawberry ice cream) '(strawberry ice cream))
+  => #t
+
+  (eqlist? '(strawberry ice cream) '(strawberry cream ice))
+  => #f
+
+  (eqlist? '(banana ((split))) '((banana (split))))
+  => #f
+
+  (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((salami)) (and (soda))))
+  => #f
+
+  (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((sausage)) (and (soda))))
+  => #t
+  """
+  def eqlist([], []), do: true
+  def eqlist(_, []), do: false
+  def eqlist([], _), do: false
+  def eqlist([h|t1], [h|t2]) when is_atom(h), do: eqlist(t1, t2)
+  def eqlist([h1|_], [h2|_]) when is_atom(h1) or is_atom(h2), do: false
+  def eqlist([h1|t1], [h2|t2]), do: eqlist(h1, h2) && eqlist(t1, t2)
+
+  # :)
+  def easy_eqlist(x, x), do: true
+  def easy_eqlist(_x, _y), do: false
+
   """
   eqlist?
   equal?

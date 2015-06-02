@@ -65,4 +65,14 @@ defmodule FullOfStarsTest do
      [[[:hot], [:tuna, [:and]]], :cheese]
     ) == :hot
   end
+
+  test "eqlist" do
+    assert eqlist([:strawberry, :ice, :cream], [:strawberry, :ice, :cream]) == true
+    assert eqlist([:strawberry, :ice, :cream], [:strawberry, :cream, :ice]) == false
+    assert eqlist([:banana, [[:split]]], [[:banana, [:split]]]) == false
+    assert eqlist([:beef, [[:sausage]], [:and, [:soda]]],
+                  [:beef, [[:salami]], [:and, [:soda]]]) == false
+    assert eqlist([:beef, [[:sausage]], [:and, [:soda]]],
+                  [:beef, [[:sausage]], [:and, [:soda]]]) == true
+  end
 end
