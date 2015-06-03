@@ -23,6 +23,8 @@ defmodule Schemer.FullOfStars do
 
   when using _cdr_, test termination with _null?_ and when using _sub1_, test
   termination with _zero?_.
+
+  The Sixth Commandment: Simplify only after the function is correct.
   """
 
   @doc """
@@ -269,13 +271,20 @@ defmodule Schemer.FullOfStars do
   def eqlist([h1|_], [h2|_]) when is_atom(h1) or is_atom(h2), do: false
   def eqlist([h1|t1], [h2|t2]), do: eqlist(h1, h2) && eqlist(t1, t2)
 
-  # :)
-  def easy_eqlist(x, x), do: true
-  def easy_eqlist(_x, _y), do: false
+  # def easy_eqlist(x, x) when is_list(x), do: true
+  # def easy_eqlist(_x, _y), do: false
 
-  """
-  eqlist?
-  equal?
+  @doc """
+  (define equal?
+    (lambda (s1 s2)
+      (cond
+        ((and (atom? s1)
+              (atom? s2))
+         (eq? s1 s2))
+        ((or (atom? s1)
+             (atom? s2))
+             #f)
+        (else (eqlist? s1 s2)))))
   """
 
 end
