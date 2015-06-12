@@ -4,10 +4,10 @@ defmodule ShadowsTest do
   import Schemer.Shadows
 
   test "numbered" do
-    assert numbered([1, :+, 1]) == true
-    assert numbered(1) == true
-    assert numbered([3, :+, [4, :*, 5]]) == true
-    assert numbered([3, :*, :sausage]) == false
+    assert numbered([1, :+, 1])
+    assert numbered(1)
+    assert numbered([3, :+, [4, :*, 5]])
+    refute numbered([3, :*, :sausage])
   end
 
   test "value" do

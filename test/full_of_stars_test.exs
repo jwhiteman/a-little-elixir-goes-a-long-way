@@ -53,7 +53,7 @@ defmodule FullOfStarsTest do
   end
 
   test "member_star" do
-    assert member_star(:chips, [[:potato], [:chips, [[:with], :fisth], [:chips]]]) == true
+    assert member_star(:chips, [[:potato], [:chips, [[:with], :fisth], [:chips]]])
   end
 
   test "leftmost" do
@@ -67,12 +67,14 @@ defmodule FullOfStarsTest do
   end
 
   test "eqlist" do
-    assert eqlist([:strawberry, :ice, :cream], [:strawberry, :ice, :cream]) == true
-    assert eqlist([:strawberry, :ice, :cream], [:strawberry, :cream, :ice]) == false
-    assert eqlist([:banana, [[:split]]], [[:banana, [:split]]]) == false
+    assert eqlist([:strawberry, :ice, :cream], [:strawberry, :ice, :cream])
+
+    refute eqlist([:strawberry, :ice, :cream], [:strawberry, :cream, :ice])
+
+    refute eqlist([:banana, [[:split]]], [[:banana, [:split]]])
+    refute eqlist([:beef, [[:sausage]], [:and, [:soda]]],
+                  [:beef, [[:salami]], [:and, [:soda]]])
     assert eqlist([:beef, [[:sausage]], [:and, [:soda]]],
-                  [:beef, [[:salami]], [:and, [:soda]]]) == false
-    assert eqlist([:beef, [[:sausage]], [:and, [:soda]]],
-                  [:beef, [[:sausage]], [:and, [:soda]]]) == true
+                  [:beef, [[:sausage]], [:and, [:soda]]])
   end
 end

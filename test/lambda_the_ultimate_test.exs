@@ -16,8 +16,8 @@ defmodule LambdaTheUltimateTest do
   end
 
   test "eq_salad" do
-    assert eq_salad.(:salad) == true
-    assert eq_salad.(:fruit) == false
+    assert eq_salad.(:salad)
+    refute eq_salad.(:fruit)
   end
 
   test "rember-f-curry" do

@@ -24,19 +24,19 @@ defmodule NumbersGamesTest do
   end
 
   test "greater_than" do
-    assert greater_than(12, 133) == false
-    assert greater_than(120, 11) == true
+    refute greater_than(12, 133)
+    assert greater_than(120, 11)
   end
 
   test "less_than" do
-    assert less_than(4, 2) == false
-    assert less_than(2, 4) == true
-    assert less_than(0, 0) == false
+    refute less_than(4, 2)
+    assert less_than(2, 4)
+    refute less_than(0, 0)
   end
 
   test "equals" do
-    assert equals(2, 3) == false
-    assert equals(9, 9) == true
+    refute equals(2, 3)
+    assert equals(9, 9)
   end
 
   test "power" do
@@ -72,8 +72,8 @@ defmodule NumbersGamesTest do
   end
 
   test "equan" do
-    assert equan(:a, :b) == false
-    assert equan(:z, :z) == true
+    refute equan(:a, :b)
+    assert equan(:z, :z)
   end
 
   test "occur" do
@@ -82,8 +82,8 @@ defmodule NumbersGamesTest do
   end
 
   test "one" do
-    assert one(1) == true
-    assert one(9) == false
+    assert one(1)
+    refute one(9)
   end
 
 end
