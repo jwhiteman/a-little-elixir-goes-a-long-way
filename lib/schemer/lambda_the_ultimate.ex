@@ -1,8 +1,14 @@
 defmodule Schemer.LambdaTheUltimate do
-  @moduledoc """
-  @wip p. 147
+  import Schemer.Shadows, only: [
+    operator_for: 1,
+    first_sub_expression: 1,
+    second_sub_expression: 1
+  ]
 
-  atom-to-function
+  @moduledoc """
+  The Ninth Commandment: Abstract common patterns with a new function.
+  @wip p. 150
+
   multiremberT
   multirember&co
   multiinsertLR
@@ -126,11 +132,11 @@ defmodule Schemer.LambdaTheUltimate do
   @doc """
   (define seqL
     (lambda (n o l)
-      (cons n l)))
+      (cons n (cons o l))))
 
   (define seqR
     (lambda (n o l)
-      (cons o (cons n (cdr l)))))
+      (cons o (cons n l))))
 
   (define insert-g
     (lambda (insert-strategy)
@@ -138,7 +144,7 @@ defmodule Schemer.LambdaTheUltimate do
         (cond
           ((null? l) '())
           ((eq? (car l) o)
-           (insert-strategy n o l))
+           (insert-strategy n o (cdr l)))
           (else
             (cons (car l)
               ((insert-g insert-strategy) n o (cdr l))))))))
@@ -146,14 +152,75 @@ defmodule Schemer.LambdaTheUltimate do
   ((insert-g seqR) 'c 'a '(a d c))
   ((insert-g seqL) 'a 'c '(c d c))
   """
-  def seqL(n, _, l), do: [n | l]
-  def seqR(n, o, [_|t]), do: [o | [n | t]]
+  def seqL(n, o, l), do: [n | [o | l]]
+  def seqR(n, o, l), do: [o | [n | l]]
 
   def insert_g(insert_strategy) do
-    fn (_, _, [])        -> []
-       (n, o, [o|_] = l) -> insert_strategy.(n, o, l)
-       (n, o, [h|t])     -> [h | insert_g(insert_strategy).(n, o, t)]
+    fn (_, _, [])    -> []
+       (n, o, [o|t]) -> insert_strategy.(n, o, t)
+       (n, o, [h|t]) -> [h | insert_g(insert_strategy).(n, o, t)]
     end
   end
 
+  @doc """
+  (define seqS (lambda (n o l) (cons n l)))
+  (define subst (insert-g seqS))
+
+  (subst 'elixir 'erlang '(my other erlang is an elixir))
+  => (my other elixir is an erlang)
+  """
+  def seqS(n, _, l), do: [n | l]
+  def subst(n, o, l), do: insert_g(&seqS/3).(n, o, l)
+
+  @doc """
+  (define seqrem (lambda (n o l) l))
+
+  (define rember
+    (lambda (n l)
+      ((insert-g seqrem) #f n l))))
+
+  (rember 'worm '(apple apple worm apple))
+  => '(apple apple apple)
+  """
+  def seqrem(_, _, l), do: l
+  def rember(a, l), do: insert_g(&seqrem/3).(nil, a, l)
+
+  @doc """
+  (define atom-to-function
+    (lambda (x)
+      (cond
+        ((eq? x '*) *)
+        ((eq? x '+) +)
+         (else ^))))
+
+  (define value
+    (lambda (nexp)
+      (cond
+        ((atom? nexp) nexp)
+        (else
+          ((atom-to-function (operator nexp))
+           (value (1st-sub-expression nexp))
+           (value (2nd-sub-expression nexp)))))))
+
+  (value '(1 + (3 * 4)))
+  => 13
+  """
+  def atom_to_function(:+), do: &add/2
+  def atom_to_function(:*), do: &times/2
+  def atom_to_function(:^), do: &pow/2
+
+  def value([_|_]=nexp) do
+    atom_to_function(operator_for(nexp)).(
+      value(first_sub_expression(nexp)),
+      value(second_sub_expression(nexp))
+    )
+  end
+  def value(nexp), do: nexp
+
+  defp pow(_, 0), do: 1
+  defp pow(n, m), do: n * pow(n, m-1)
+
+  defp add(n, m), do: n + m
+
+  defp times(n, m), do: n * m
 end

@@ -143,13 +143,13 @@ defmodule Schemer.Shadows do
     end
   end
 
-  defp operator_for([_, :+, _]), do: :+
-  defp operator_for([_, :*, _]), do: :*
-  defp operator_for([_, :^, _]), do: :^
+  def operator_for([_, :+, _]), do: :+
+  def operator_for([_, :*, _]), do: :*
+  def operator_for([_, :^, _]), do: :^
 
-  defp first_sub_expression([sub, _, _]), do: generic_value(sub)
-  defp second_sub_expression([_, _, sub]), do: generic_value(sub)
+  def first_sub_expression([sub, _, _]), do: generic_value(sub)
+  def second_sub_expression([_, _, sub]), do: generic_value(sub)
 
-  defp pow(_, 0), do: 1
-  defp pow(n, m), do: n * pow(n, m-1)
+  def pow(_, 0), do: 1
+  def pow(n, m), do: n * pow(n, m-1)
 end

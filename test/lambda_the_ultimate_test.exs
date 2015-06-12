@@ -37,4 +37,17 @@ defmodule LambdaTheUltimateTest do
     assert insert_g(&seqR/3).(:c, :a, [:a, :d, :c]) == [:a, :c, :d, :c]
   end
 
+  test "subst" do
+    assert subst(:elixir, :erlang, [:my, :other, :erlang, :is, :an, :elixir]) ==
+      [:my, :other, :elixir, :is, :an, :elixir]
+  end
+
+  test "rember" do
+    assert rember(:worm, [:apple, :apple, :worm, :apple]) == [:apple, :apple, :apple]
+  end
+
+  test "value" do
+    assert value([1, :+, [3, :*, 4]]) == 13
+  end
+
 end
