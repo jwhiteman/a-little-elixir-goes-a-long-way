@@ -91,4 +91,15 @@ defmodule LambdaTheUltimateTest do
     ) == [2, 3]
   end
 
+  test "evens_only_star" do
+    assert evens_only_star([[9, 1, 2, 8], 3, 10, [[9, 9], 7, 6], 2]) ==
+      [[2, 8], 10, [[], 6], 2]
+  end
+
+  test "evens_only_star_and_co" do
+    collector = &([&1, &2, &3])
+    assert evens_only_star_and_co([[9, 1, 2, 8], 3, 10, [[9, 9], 7, 6], 2], collector) ==
+      [[[2, 8], 10, [[], 6], 2], 1920, 38]
+  end
+
 end

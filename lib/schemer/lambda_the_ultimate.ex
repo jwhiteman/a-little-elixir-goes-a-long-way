@@ -1,4 +1,4 @@
-# Chapter 8. WIP
+# Chapter 8.
 defmodule Schemer.LambdaTheUltimate do
   import Schemer.Shadows, only: [
     operator_for: 1,
@@ -12,10 +12,6 @@ defmodule Schemer.LambdaTheUltimate do
   The Ninth Commandment: Abstract common patterns with a new function.
 
   The Tenth Commandment: Build functions to collect more than one value at a time.
-
-  multiinsertLR&co
-  evens-only*
-  evens-only&co
   """
 
   @doc """
@@ -381,6 +377,84 @@ defmodule Schemer.LambdaTheUltimate do
   end
   def multiinsertLR_and_co(new, oldL, oldR, [h|t], col) do
     multiinsertLR_and_co(new, oldL, oldR, t, col)
+  end
+
+  @doc """
+  (define evens-only*
+    (lambda (l)
+      (cond
+        ((null? l) (quote ()))
+        ((atom? (car l))
+         (cond
+           ((even? (car l))(cons (car l) (evens-only* (cdr l))))
+           (else
+             (evens-only* (cdr l)))))
+        (else
+          (cons (evens-only* (car l))
+                (evens-only* (cdr l)))))))
+   (evens-only* (quote ((9 1 2 8) 3 10 ((9 9) 7 6) 2)))
+   => ((2 8) 10 (() 6) 2)
+  """
+  def evens_only_star([]), do: []
+  def evens_only_star([h=[_|_]|t]), do: [evens_only_star(h) | evens_only_star(t)]
+  def evens_only_star([h|t]) when rem(h,2) == 0, do: [h | evens_only_star(t)]
+  def evens_only_star([_|t]), do: evens_only_star(t)
+
+  @doc """
+  evens-only*&co builds a nested list of even numbers by removing the odd
+  ones from its argument list and simultaneously multiplies the even numbers
+  and sums up the odd numbers that occur in its argument.
+
+  (define evens-only*&co
+    (lambda (l col)
+      (cond
+        ((null? l) (col (quote ()) 1 0))
+        ((atom? (car l))
+         (cond
+           ((even? (car l))
+            (evens-only*&co (cdr l)
+              (lambda (result product sum)
+                (col (cons (car l) result)
+                     (* (car l) product)
+                     sum))))
+            (else
+              (evens-only*&co (cdr l)
+                (lambda (result product sum)
+                  (col result product (+ (car l) sum)))))))
+        (else
+          (evens-only*&co (car l)
+            (lambda (car-result car-product car-sum)
+              (evens-only*&co (cdr l)
+                (lambda (cdr-result cdr-product cdr-sum)
+                  (col (cons car-result cdr-result)
+                       (* car-product cdr-product)
+                       (+ car-sum cdr-sum))))))))))
+  (evens-only*&co 
+    (quote ((9 1 2 8) 3 10 ((9 9) 7 6) 2))
+    (lambda (x y z) (cons x (cons y (cons z (quote ()))))))
+  => (((2 8) 10 (() 6) 2) 1920 38)
+  """
+  def evens_only_star_and_co([], col), do: col.([], 1, 0)
+  def evens_only_star_and_co([h=[_|_]|t], col) do
+    evens_only_star_and_co(
+      h,
+      fn (car_result, car_product, car_sum) ->
+        evens_only_star_and_co(
+          t,
+          fn (cdr_result, cdr_product, cdr_sum) ->
+            col.([car_result|cdr_result], car_product * cdr_product, car_sum + cdr_sum)
+          end)
+      end)
+  end
+  def evens_only_star_and_co([h|t], col) when rem(h,2) == 0 do
+    evens_only_star_and_co(t, fn (result, product, sum) ->
+      col.([h | result], h * product, sum)
+    end)
+  end
+  def evens_only_star_and_co([h|t], col) do
+    evens_only_star_and_co(t, fn (result, product, sum) ->
+      col.(result, product, sum + h)
+    end)
   end
 
 end
