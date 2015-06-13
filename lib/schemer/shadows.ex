@@ -1,3 +1,4 @@
+# Chapter 6
 defmodule Schemer.Shadows do
   @moduledoc """
   The Seventh Commandment: Recur on the _subparts_ that are the same in nature:

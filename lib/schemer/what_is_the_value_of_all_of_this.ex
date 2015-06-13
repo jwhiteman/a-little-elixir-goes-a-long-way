@@ -1,3 +1,4 @@
+# Chapter 10. WIP
 defmodule Schemer.WhatIsTheValueOfAllOfThis do
   @moduledoc """
   [:define, :add, [:lambda, [:x, :y], [:+, :x, :y]]]

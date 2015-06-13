@@ -1,3 +1,4 @@
+# Chapter 8. WIP
 defmodule Schemer.LambdaTheUltimate do
   import Schemer.Shadows, only: [
     operator_for: 1,

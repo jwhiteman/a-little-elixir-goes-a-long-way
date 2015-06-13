@@ -1,3 +1,4 @@
+# Chapter 3
 defmodule Schemer.ConsTheMagnificent do
 
   @moduledoc """
