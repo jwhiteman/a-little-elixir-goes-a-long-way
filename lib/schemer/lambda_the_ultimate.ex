@@ -6,6 +6,8 @@ defmodule Schemer.LambdaTheUltimate do
     second_sub_expression: 1
   ]
 
+  import Schemer.FullOfStars, only: [equal: 2]
+
   @moduledoc """
   The Ninth Commandment: Abstract common patterns with a new function.
   @wip p. 150
@@ -224,4 +226,64 @@ defmodule Schemer.LambdaTheUltimate do
   defp add(n, m), do: n + m
 
   defp times(n, m), do: n * m
+
+  @doc """
+  (define multirember-f
+    (lambda (test?)
+      (lambda (a l)
+        (cond
+          ((null? l) (quote ()))
+          ((test? (car l) a)
+           ((multirember-f test?) a (cdr l)))
+          (else
+            (cons (car l)
+              ((multirember-f test?) a (cdr l))))))))
+
+  ((multirember-f eq?) (quote c) (quote (a c d c)))
+  => (a d)
+  """
+  def multirember_f(test) do
+    fn (_, [])    -> []
+       (a, [h|t]) ->
+         case test.(a, h) do
+           true   -> multirember_f(test).(a, t)
+           false  -> [h | multirember_f(test).(a, t)]
+         end
+    end
+  end
+
+  @doc """
+  (define multirember-eq? (multirember-f eq?))
+  """
+  def multirember_eq, do: multirember_f(&equal/2)
+
+  @doc """
+  (define eq?-tuna
+    (eq?-c (quote tuna)))
+
+  (define multiremberT
+    (lambda (test)
+      (lambda (l)
+        (cond
+          ((null? l) (quote ()))
+          ((test (car l))
+            ((multiremberT test) (cdr l)))
+          (else
+            (cons (car l)
+              ((multiremberT test) (cdr l))))))))
+
+  ((multiremberT eq?-tuna) (quote (shrimp salad tuna salad and tuna)))
+  => (shrimp salad salad and)
+  """
+  def eq_tuna, do: eq_c(:tuna)
+
+  def multiremberT(test) do
+    fn ([])    -> []
+       ([h|t]) ->
+         case test.(h) do
+           true  -> multiremberT(test).(t)
+           false -> [h | multiremberT(test).(t)]
+         end
+    end
+  end
 end

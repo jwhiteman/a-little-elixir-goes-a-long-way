@@ -50,4 +50,17 @@ defmodule LambdaTheUltimateTest do
     assert value([1, :+, [3, :*, 4]]) == 13
   end
 
+  test "multirember-f" do
+    assert multirember_f(&(&1 == &2)).(:c, [:a, :c, :d, :c]) == [:a, :d]
+  end
+
+  test "multirember_eq" do
+    assert multirember_eq.(:c, [:a, :c, :d, :c]) == [:a, :d]
+  end
+
+  test "multiremberT" do
+    assert multiremberT(&(&1 == :tuna)).([:shrimp, :salad, :tuna, :salad, :and, :tuna]) ==
+      [:shrimp, :salad, :salad, :and]
+  end
+
 end
