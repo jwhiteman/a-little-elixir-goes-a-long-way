@@ -63,4 +63,32 @@ defmodule LambdaTheUltimateTest do
       [:shrimp, :salad, :salad, :and]
   end
 
+  test "multirember_and_co" do
+    assert multirember_and_co(
+      :a,
+      [:x, :y, :z, :a, :b, :a, :a, :a, :c], 
+      &( [&1 | [&2 | []]] )
+   ) == [[:x, :y, :z, :b, :c], [:a, :a, :a, :a]]
+
+   assert multirember_and_co(
+     :tuna,
+     [:strawberries, :tuna, :and, :swordfish],
+     fn (seen, _) -> length(seen) end
+   ) == 3
+  end
+
+  test "multiinsertLR" do
+    assert multiinsertLR(:zap, :l, :r, [:l, :x, :r, :x]) == [:zap, :l, :x, :r, :zap, :x]
+  end
+
+  test "multiinsertLR_and_co" do
+    assert multiinsertLR_and_co(
+      :zap,
+      :l,
+      :r,
+      [:l, :x, :r, :x, :r, :l, :r],
+      fn (left, right) -> [left, right] end
+    ) == [2, 3]
+  end
+
 end

@@ -10,11 +10,9 @@ defmodule Schemer.LambdaTheUltimate do
 
   @moduledoc """
   The Ninth Commandment: Abstract common patterns with a new function.
-  @wip p. 150
 
-  multiremberT
-  multirember&co
-  multiinsertLR
+  The Tenth Commandment: Build functions to collect more than one value at a time.
+
   multiinsertLR&co
   evens-only*
   evens-only&co
@@ -286,4 +284,103 @@ defmodule Schemer.LambdaTheUltimate do
          end
     end
   end
+
+  @doc """
+  multirember&co looks at every atom of the _lat_ to see
+  whether it is _eq?_ to _a_. Those atoms that are not are
+  collected in one list _newlat_; the others for which the
+  answer is true are collected in a second list _seen_. Finally,
+  it determines the value of (col newlat seen).
+
+  (define multirember&co
+    (lambda (a lat col)
+      (cond
+        ((null? lat) (col (quote ()) (quote ())))
+        ((eq? (car lat) a)
+         (multirember&co a (cdr lat)
+           (lambda (newlat seen)
+             (col newlat (cons (car lat) seen)))))
+        (else
+          (multirember&co a (cdr lat)
+            (lambda (newlat seen)
+             (col (cons (car lat) newlat) seen)))))))
+
+  (multirember&co 'a '(x y z a b a a a c) (lambda (x y) (cons x (cons y (quote ())))))
+  => ((x y z b c) (a a a a))
+  """
+  def multirember_and_co(_, [], col), do: col.([], [])
+  def multirember_and_co(a, [a|t], col) do
+    multirember_and_co(a, t, &( col.(&1, [a|&2]) ))
+  end
+  def multirember_and_co(a, [h|t], col) do
+    multirember_and_co(a, t, &( col.([h|&1], &2)))
+  end
+
+  @doc """
+  (define multiinsertLR
+    (lambda (new oldL oldR lat)
+      (cond
+        ((null? lat) (quote ()))
+        ((eq? (car lat) oldL)
+         (cons new (cons oldL (multiinsertLR new oldL oldR (cdr lat)))))
+        ((eq? (car lat) oldR)
+         (cons oldR (cons new (multiinsertLR new oldL oldR (cdr lat)))))
+        (else
+          (cons (car lat)
+            (multiinsertLR new oldL oldR (cdr lat)))))))
+
+  (multiinsertLR 'zap 'l 'r '(l x r x))
+  => (zap l x r zap x)
+  """
+  def multiinsertLR(_, _, _, []), do: []
+  def multiinsertLR(n, oldl, oldr, [oldl|t]) do
+    [n | [oldl | multiinsertLR(n, oldl, oldr, t)]]
+  end
+  def multiinsertLR(n, oldl, oldr, [oldr|t]) do
+    [oldr | [n | multiinsertLR(n, oldl, oldr, t)]]
+  end
+  def multiinsertLR(n, oldl, oldr, [h|t]) do
+    [h | multiinsertLR(n, oldl, oldr, t)]
+  end
+
+  @doc """
+  (define multiinsertLR&co
+    (lambda (new oldL oldR lat col)
+      (cond
+        ((null? lat) (col 0 0))
+        ((eq? (car lat) oldL)
+         (multiinsertLR&co new oldL oldR (cdr lat)
+           (lambda (left right)
+             (col (add1 left) right))))
+        ((eq? (car lat) oldR)
+         (multiinsertLR&co new oldL oldR (cdr lat)
+           (lambda (left right)
+             (col left (add1 right)))))
+        (else
+          (multiinsertLR&co new oldL oldR (cdr lat) col)))))
+
+  (multiinsertLR&co 'zap 'l 'r '(l x r x r l r)
+     (lambda (lc rc) (cons lc (cons rc (quote ())))))
+  => (2 3)
+  """
+  def multiinsertLR_and_co(_, _, _, [], col) do
+    col.(0, 0)
+  end
+
+  def multiinsertLR_and_co(new, oldL, oldR, [oldL|t], col) do
+    multiinsertLR_and_co(
+      new, oldL, oldR, t,
+      fn (left, right) -> col.(left + 1, right) end
+    )
+  end
+  def multiinsertLR_and_co(new, oldL, oldR, [oldR|t], col) do
+    multiinsertLR_and_co(
+      new, oldL, oldR, t,
+      fn (left, right) -> col.(left, right + 1) end
+    )
+  end
+  def multiinsertLR_and_co(new, oldL, oldR, [h|t], col) do
+    multiinsertLR_and_co(new, oldL, oldR, t, col)
+  end
+
 end
