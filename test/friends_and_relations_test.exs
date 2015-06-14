@@ -70,4 +70,19 @@ defmodule FriendsAndRelationsTest do
 
     assert build([:a,:b,:c], [1,2,3]) == [[:a, :b, :c], [1,2,3]]
   end
+
+  test "is_fun" do
+    assert is_fun([[:a, :b], [:c, :d], [:d, :b]])
+    refute is_fun([[:a, :b], [:c, :d], [:a, :e]])
+  end
+
+  test "revrel" do
+    assert revrel([[8, :a], [:pumpkin, :pie], [:got, :sick]]) ==
+      [[:a, 8], [:pie, :pumpkin], [:sick, :got]]
+  end
+
+  test "is_fullfun" do
+    refute is_fullfun([[:grape, :raisin], [:plume, :prune], [:stewed, :prune]])
+    assert is_fullfun([[:grape, :raisin], [:plume, :prune], [:stewed, :grape]])
+  end
 end

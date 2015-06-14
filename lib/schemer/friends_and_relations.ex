@@ -1,16 +1,8 @@
-# Chapter 7. WIP
+# Chapter 7.
 defmodule Schemer.FriendsAndRelations do
 
   import Schemer.DoItAgain, only: [member: 2]
   import Schemer.ConsTheMagnificent, only: [firsts: 1]
-
-  @moduledoc """
-  fun?
-  revrel
-  revpair
-  fullfun?
-  one-to-one
-  """
 
   @doc """
   (define set?
@@ -211,6 +203,47 @@ defmodule Schemer.FriendsAndRelations do
   def build(s1, s2), do: [s1 | [s2 | []]]
 
   @doc """
+  ;; ...a finite function is a list of pairs in which no
+  ;; first element of any pair is the same as any other
+  ;; first element.
+
+  (define fun? (lambda (l) (set? (firsts l))))
+
+  (fun? '((a b) (c d) (d b)))
+  => #t
+
+  (fun? '((a b) (c d) (a e)))
+  => #f
   """
+  def is_fun(l), do: firsts(l) |> is_set
+
+  @doc """
+  (define revrel
+    (lambda (rel)
+      (cond
+        ((null? rel) '())
+        (else
+         (cons (build (second (car rel))
+                      (first (car rel)))
+               (revrel (cdr rel)))))))
+
+  (revrel '((8 a) (pumpkin pie) (got sick)))
+  => ((a  8) (pie pumpkin) (sick got))
+  """
+  def revrel([]), do: []
+  def revrel([[f,s]|t]), do: [[s,f] | revrel(t)]
+
+  @doc """
+  (define fullfun?
+    (lambda (fun)
+      (fun? (revrel fun))))
+
+  (fullfun? '((grape raisin) (plum prune) (stewed prune)))
+  => #f
+
+  (fullfun? '((grape raisin) (plum prune) (stewed grape)))
+  => #t
+  """
+  def is_fullfun(f), do: revrel(f) |> is_fun
 
 end
