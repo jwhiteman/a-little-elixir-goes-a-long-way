@@ -1,43 +1,10 @@
-# Chapter 10. WIP 196
+# Chapter 10.
 defmodule Schemer.WhatIsTheValueOfAllOfThis do
   import Schemer.FriendsAndRelations, only: [
     build: 2,
     first: 1,
     second: 1
   ]
-
-  @moduledoc """
-  [] lookup-in-table
-  expression-to-action
-  atom-to-action
-  list-to-action
-  value
-  meaning
-  *const
-  *quote
-  *identifier
-  initial-table
-  *lambda
-  table-of
-  formals-of
-  body-of
-  evcon
-  else?
-  question-of
-  answer-of
-  *cond
-  cond-lines-of
-  evlis
-  *application
-  function-of
-  arguments-of
-  primitive?
-  non-primitive?
-  apply
-  apply-primitive
-  :atom?
-  apply-closure
-  """
 
   @doc """
   ;; helpers
@@ -113,5 +80,105 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
       fn (n) -> lookup_in_table(n, rest_of_table, table_f) end
     )
   end
+
+  @doc """
+  (define *const
+    (lambda (e table)
+      (cond
+        ((number? e) e)
+        ((eq? e #t) #t)
+        ((eq? e #f) #f)
+        (else
+          (build 'primitive e)))))
+  """
+  def const_action(n, _) when is_number(n), do: n
+  def const_action(:true, _), do: true
+  def const_action(:false, _), do: false
+  def const_action(p, _), do: [:primitive, p]
+
+  @doc """
+  (define *quote
+    (lambda (e table)
+      (text-of e)))
+  """
+  def quote_action([_label, body], _), do: body
+
+  @doc """
+  (define *identifier
+    (lambda (e table)
+      (lookup-in-table e table initial-table)))
+  """
+  def identifier_action(e, table) do
+    lookup_in_table(e, table, fn (_) -> raise "error." end)
+  end
+
+  @doc """
+  (define *lambda
+    (lambda (e table)
+      (build 'non-primitive
+         (cons table (cdr e)))))
+  """
+  def lambda_action([_type, formals, body], table) do
+    [:non_primitive, table, formals, body]
+  end
+
+  @doc """
+  (define atom-to-action
+    (lambda (e)
+      (cond
+        ((number? e) *const)
+        ((eq? e #t) *const)
+        ((eq? e #f) *const)
+        ((eq? e 'cons) *const)
+        ((eq? e 'car) *const)
+        ((eq? e 'cdr) *const)
+        ((eq? e 'null?) *const)
+        ((eq? e 'eq?) *const)
+        ((eq? e 'atom?) *const)
+        ((eq? e 'zero?) *const)
+        ((eq? e 'add1) *const)
+        ((eq? e 'sub1) *const)
+        ((eq? e 'number?) *const)
+        (else *identifier))))
+  """
+  def atom_to_action(n) when is_number(n) do
+    &Schemer.WhatIsTheValueOfAllOfThis.const_action/2
+  end
+
+  def atom_to_action(e) do
+    case is_member(e, built_ins) do
+      true  -> &Schemer.WhatIsTheValueOfAllOfThis.const_action/2
+      false -> &Schemer.WhatIsTheValueOfAllOfThis.identifier_action/2
+    end
+  end
+
+  @doc """
+  (define list-to-action
+    (lambda (e)
+      (cond
+        ((atom? (car e))
+         (cond
+           ((eq? (car e) 'quote) *quote)
+           ((eq? (car e) 'lambda) *lambda)
+           ((eq? (car e) 'cond) *cond)
+           (else *application)))
+        (else *application))))
+  """
+
+  def cond_action(_, _), do: raise "not implemented"
+  def application_action(_, _), do: raise "not implemented"
+
+  defp built_ins do
+    [
+      :true, :false, :cons,
+      :car, :cdr, :null?,
+      :eq?, :atom?, :zero?,
+      :add1, :sub1, :number?
+    ]
+  end
+
+  defp is_member(_, []), do: false
+  defp is_member(a, [a|_]), do: true
+  defp is_member(a, [_|t]), do: is_member(a, t)
 
 end
