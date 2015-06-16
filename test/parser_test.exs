@@ -11,6 +11,15 @@ defmodule ParserTest do
     assert parse("(+ 1 2 3)") == [:+, 1, 2, 3]
   end
 
+  test "booleans" do
+    [_, true]  = parse("(else #t)")
+    [_, false] = parse("(else #f)")
+  end
+
+  test "atoms with integers" do
+    assert parse("(add1 x)") == [:add1, :x]
+  end
+
   test "a complex list" do
     assert parse("""
     (define rember

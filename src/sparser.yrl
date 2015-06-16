@@ -1,5 +1,5 @@
 Nonterminals list elems elem.
-Terminals '(' ')' int atom.
+Terminals '(' ')' int bool atom.
 
 Rootsymbol list.
 
@@ -14,6 +14,7 @@ elems ->
   elem elems : ['$1'|'$2'].
 
 elem -> int : extract_token('$1').
+elem -> bool : extract_token('$1').
 elem -> atom : extract_token('$1').
 elem -> list : '$1'.
 
