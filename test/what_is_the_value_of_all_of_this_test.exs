@@ -30,8 +30,8 @@ defmodule Schemer.WhatIsTheValueOfAllOfThisTest do
   end
 
   test "const_action returns booleans as true or false" do
-    assert const_action(:true, empty_table)
-    refute const_action(:false, empty_table)
+    assert const_action(true, empty_table)
+    refute const_action(false, empty_table)
   end
 
   test "const_action returns labled primitives" do
@@ -58,12 +58,14 @@ defmodule Schemer.WhatIsTheValueOfAllOfThisTest do
   end
 
   test "a lambda stores its environment" do
-    [_, some_table, _, _] = lambda_action([:lambda, [:x], [:add1, :x]], some_table)
+    [_, table, _, _] = lambda_action([:lambda, [:x], [:add1, :x]], some_table)
+
+    assert table == some_table
   end
 
   test "atom_to_action returns const_action for nums, bools, and build-in methods" do
     assert atom_to_action(1)      == &const_action/2
-    assert atom_to_action(:true)  == &const_action/2
+    assert atom_to_action(true)   == &const_action/2
     assert atom_to_action(:car)   == &const_action/2
   end
 

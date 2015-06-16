@@ -92,8 +92,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
           (build 'primitive e)))))
   """
   def const_action(n, _) when is_number(n), do: n
-  def const_action(:true, _), do: true
-  def const_action(:false, _), do: false
+  def const_action(b, _) when is_boolean(b), do: b
   def const_action(p, _), do: [:primitive, p]
 
   @doc """
@@ -146,7 +145,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
   end
 
   def atom_to_action(e) do
-    case is_member(e, built_ins) do
+    case is_member(e, primitives) do
       true  -> &Schemer.WhatIsTheValueOfAllOfThis.const_action/2
       false -> &Schemer.WhatIsTheValueOfAllOfThis.identifier_action/2
     end
@@ -168,9 +167,9 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
   def cond_action(_, _), do: raise "not implemented"
   def application_action(_, _), do: raise "not implemented"
 
-  defp built_ins do
+  defp primitives do
     [
-      :true, :false, :cons,
+      true, false, :cons,
       :car, :cdr, :null?,
       :eq?, :atom?, :zero?,
       :add1, :sub1, :number?
