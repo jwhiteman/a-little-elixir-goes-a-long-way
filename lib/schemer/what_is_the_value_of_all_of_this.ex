@@ -108,7 +108,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
       (lookup-in-table e table initial-table)))
   """
   def identifier_action(e, table) do
-    lookup_in_table(e, table, fn (_) -> raise "error." end)
+    lookup_in_table(e, table, fn (n) -> raise "identifier #{n} not found." end)
   end
 
   @doc """
@@ -118,7 +118,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
          (cons table (cdr e)))))
   """
   def lambda_action([_type, formals, body], table) do
-    [:non_primitive, table, formals, body]
+    [:non_primitive, [table, formals, body]]
   end
 
   @doc """
@@ -163,16 +163,190 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
            (else *application)))
         (else *application))))
   """
+  def list_to_action([:quote|_]), do: &Schemer.WhatIsTheValueOfAllOfThis.quote_action/2
+  def list_to_action([:lambda|_]), do: &Schemer.WhatIsTheValueOfAllOfThis.lambda_action/2
+  def list_to_action([:cond|_]), do: &Schemer.WhatIsTheValueOfAllOfThis.cond_action/2
+  def list_to_action(_) do
+    &Schemer.WhatIsTheValueOfAllOfThis.application_action/2
+  end
 
-  def cond_action(_, _), do: raise "not implemented"
-  def application_action(_, _), do: raise "not implemented"
+  @doc """
+  (define expression-to-action
+    (lambda (e)
+      (cond
+        ((atom? e) (atom-to-action e))
+        (else
+          (list-to-action e)))))
+  """
+  def expression_to_action(e = [_|_]), do: list_to_action(e)
+  def expression_to_action(e) do
+    atom_to_action(e)
+  end
+
+  @doc """
+  (define meaning
+    (lambda (e table)
+      ((expression-to-action e) e table)))
+  """
+  def meaning(e, table) do
+    expression_to_action(e).(e, table)
+  end
+
+  @doc """
+  (define evcon
+    (lambda (lines table)
+      (cond
+        ((else? (question-of (car lines)))
+         (meaning (answer-of (car lines)) table))
+        ((meaning (question-of (car lines)) table)
+         (meaning (answer-of (car lines)) table))
+        (else
+          (evcon (cdr lines) table)))))
+
+  (define else?
+    (lambda (x)
+      (cond
+        ((atom? x) (eq? x 'else))
+        (else #f))))
+
+  (define question-of first)
+  (define answer-of second)
+  (define cond-lines-of cdr)
+
+  (define *cond
+    (lambda (e table)
+      (evcon (cond-lines-of e) table)))
+  """
+  def cond_action([_ | cond_lines], table), do: evcon(cond_lines, table)
+
+  defp evcon([[:else, answer]], table), do: meaning(answer, table)
+
+  defp evcon([[question, answer] | remaining_questions], table) do
+    case meaning(question, table) do
+      true  -> meaning(answer, table)
+      false -> evcon(remaining_questions, table)
+    end
+  end
+  defp evcon([], _), do: raise "error: no true questions found."
+
+  @doc """
+  (define evlis
+    (lambda (args table)
+      (cond
+        ((null? args) '())
+        (else
+          (cons (meaning (car args) table)
+             (evlis (cdr args) table))))))
+  """
+  def evlis([], _), do: []
+  def evlis([h|t], table) do
+    [meaning(h, table) | evlis(t, table)]
+  end
+
+  @doc """
+  (define apply-primitive
+    (lambda (name vals)
+      (cond
+        ((eq? name 'cons)
+         (cons (first vals) (second vals)))
+        ((eq? name 'car)
+         (car (first vals)))
+        ((eq? name 'cdr)
+         (cdr (first vals)))
+        ((eq? name 'null?)
+         (null? (first vals)))
+        ((eq? name 'eq?)
+         (eq? (first vals) (second vals)))
+        ((eq? name 'atom?)
+         (:atom? (first vals)))
+        ((eq? name 'zero?)
+         (zero? (first vals)))
+        ((eq? name 'add1)
+         (+ 1 (first vals)))
+        ((eq? name 'sub1)
+         (- 1 (first vals)))
+        ((eq? name 'number?)
+         (number? (first vals))))))
+  """
+  def apply_primitive(:eq?, [v, v]), do: true
+  def apply_primitive(:eq?, [_, _]), do: false
+  def apply_primitive(:cons, [l, r]), do: [l|r]
+  def apply_primitive(:car, [[h|_] | _]), do: h
+  def apply_primitive(:cdr, [[_|t] | _]), do: t
+  def apply_primitive(:null?, [[] | _]), do: true
+  def apply_primitive(:null?, _), do: false
+  def apply_primitive(:atom?, [n]), do: is_atom(n) || is_number(n)
+  def apply_primitive(:zero?, [0]), do: true
+  def apply_primitive(:zero?, _), do: false
+  def apply_primitive(:add1, [n]) do
+    n + 1
+  end
+  def apply_primitive(:sub1, [n]), do: n - 1
+  def apply_primitive(:number?, [n]), do: is_number(n)
+  def apply_primitive(:*, [l, r]), do: l * r
+  def apply_primitive(n, _), do: raise "error: no primitive matches #{n}"
+
+  @doc """
+  (define apply
+    (lambda (fun vals)
+      (cond
+        ((primitive? fun)
+         (apply-primitive (second fun) vals))
+        ((non-primitive? fun)
+         (apply-closure (second fun) vals)))))
+  """
+  def appli([:primitive, fun_rep], vals) do
+    apply_primitive(fun_rep, vals)
+  end
+
+  def appli([:non_primitive, fun_rep], vals) do
+    apply_closure(fun_rep, vals)
+  end
+
+  @doc """
+  (define *application
+    (lambda (e table)
+      (applyz
+        (meaning (function-of e) table)
+        (evlis (arguments-of e) table))))
+  """
+  def application_action([func | args], table) do
+    f = meaning(func, table)
+    a = evlis(args, table)
+
+    appli(
+      f,
+      a
+    )
+  end
+
+  @doc """
+  (define apply-closure
+    (lambda (closure vals)
+      (meaning
+        (body-of closure)
+        (extend-table
+           (new-entry (formals-of closure) vals)
+               (table-of closure)))))
+  """
+  def apply_closure([table, formals, body], vals) do
+    meaning(body, [[formals, vals] | table])
+  end
+
+  @doc """
+  (define value
+    (lambda (e)
+        (meaning e '())))
+  """
+  def value(e), do: meaning(e, [])
 
   defp primitives do
     [
       true, false, :cons,
       :car, :cdr, :null?,
       :eq?, :atom?, :zero?,
-      :add1, :sub1, :number?
+      :add1, :sub1, :number?,
+      :*
     ]
   end
 
