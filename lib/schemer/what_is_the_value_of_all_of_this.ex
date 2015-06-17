@@ -179,18 +179,14 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
           (list-to-action e)))))
   """
   def expression_to_action(e = [_|_]), do: list_to_action(e)
-  def expression_to_action(e) do
-    atom_to_action(e)
-  end
+  def expression_to_action(e), do: atom_to_action(e)
 
   @doc """
   (define meaning
     (lambda (e table)
       ((expression-to-action e) e table)))
   """
-  def meaning(e, table) do
-    expression_to_action(e).(e, table)
-  end
+  def meaning(e, table), do: expression_to_action(e).(e, table)
 
   @doc """
   (define evcon
@@ -278,9 +274,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
   def apply_primitive(:atom?, [n]), do: is_atom(n) || is_number(n)
   def apply_primitive(:zero?, [0]), do: true
   def apply_primitive(:zero?, _), do: false
-  def apply_primitive(:add1, [n]) do
-    n + 1
-  end
+  def apply_primitive(:add1, [n]), do: n + 1
   def apply_primitive(:sub1, [n]), do: n - 1
   def apply_primitive(:number?, [n]), do: is_number(n)
   def apply_primitive(:*, [l, r]), do: l * r
@@ -311,12 +305,9 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
         (evlis (arguments-of e) table))))
   """
   def application_action([func | args], table) do
-    f = meaning(func, table)
-    a = evlis(args, table)
-
     appli(
-      f,
-      a
+      meaning(func, table),
+      evlis(args, table)
     )
   end
 
