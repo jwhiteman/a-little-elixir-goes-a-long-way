@@ -12,6 +12,15 @@ defmodule FullOfStarsTest do
     ) == [[:coffee], [[:tea]], [:and, [:hick]]]
   end
 
+  test "rember_star_pl" do
+    assert rember_star_pl(:cup, [
+                               [:coffee], :cup,
+                               [[:tea], :cup],
+                               [:and, [:hick]], :cup
+                             ]
+    ) == [[:coffee], [[:tea]], [:and, [:hick]]]
+  end
+
   test "insert_right_star" do
     assert insert_right_star(:roast, :chuck, [[:how, :much, [:wood]], :could,
                                      [[:a, [:wood], :chuck]],

@@ -57,6 +57,28 @@ defmodule Schemer.FullOfStars do
   def rember_star(e, [h|t]) when is_atom(h), do: [h | rember_star(e, t)]
   def rember_star(e, [h|t]), do: [rember_star(e, h) | rember_star(e, t)]
 
+  # an experiment using a parallel map
+  def rember_star_pl(_, []), do: []
+  def rember_star_pl(e, [e|t]) when is_atom(e), do: rember_star_pl(e, t)
+  def rember_star_pl(e, [h|t]) when is_atom(h), do: [h | rember_star_pl(e, t)]
+  def rember_star_pl(e, [h|t]) do
+    [left, right] = rember_star_pl(e, h, t)
+
+    [left | right]
+  end
+  def rember_star_pl(e, h, t) do
+    me = self
+
+    [h, t]
+    |> Enum.map(fn (col) ->
+         spawn_link fn -> (send me, { self, rember_star_pl(e, col) }) end
+       end)
+    |> Enum.map(fn (pid) ->
+         receive do { ^pid, result } -> result end
+       end)
+  end
+
+
   @doc """
   (define insertR*
     (lambda (n o l)
