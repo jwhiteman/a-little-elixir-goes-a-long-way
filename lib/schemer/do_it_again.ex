@@ -8,15 +8,6 @@ defmodule Schemer.DoItAgain do
   """
 
   @doc """
-  (define lat?
-    (lambda (l)
-      (cond
-        ((null? l) #t)
-        (else
-          (and (atom? (car l))
-               (lat? (cdr l)))))))
-
-
   (lat? '(jack sprat could eat no fat))
   => #t
 
@@ -25,12 +16,27 @@ defmodule Schemer.DoItAgain do
 
   (lat? '())
   => #f
+
+  (define lat?
+    (lambda (l)
+      (cond
+        ((null? l) #t)
+        (else
+          (and (atom? (car l))
+               (lat? (cdr l)))))))
+
   """
   def lat([]), do: true
   def lat([[_|_]|_]), do: false
   def lat([_|t]), do: lat(t)
 
   @doc """
+  (member? 'poached '(fried eggs and scrambled eggs))
+  => #f
+
+  (member? 'meat '(mashed potatoes and meat gravy))
+  => #t
+
   (define member?
     (lambda (a lat)
       (cond
@@ -38,12 +44,6 @@ defmodule Schemer.DoItAgain do
         ((eq? (car lat) a) #t)
         (else
           (member? a (cdr lat))))))
-
-  (member? 'poached '(fried eggs and scrambled eggs))
-  => #f
-
-  (member? 'meat '(mashed potatoes and meat gravy))
-  => #t
   """
   def member(_, []), do: false
   def member(a, [a|_]), do: true

@@ -16,10 +16,6 @@ defmodule Schemer.ConsTheMagnificent do
   """
 
   @doc """
-  `rember` takes an atom and a lat as its arguments,
-  and makes a new lat with the first occurrence
-  of the atom in the old lat removed.
-
   (rember 'mint '(lamb chops and mint jelly))
   => (lamb chops and jelly)
 
@@ -46,12 +42,6 @@ defmodule Schemer.ConsTheMagnificent do
   def rember(n, [h|t]), do: [h | rember(n, t)]
 
   @doc """
-  `firsts` takes one argument, a list,
-  which is either a null list or contains
-  only non-empty lists. It builds another list
-  composed of the first S-expression of each
-  internal list.
-
   (firsts '((apple peach pumpkin)
             (plum pear cherry)
             (grape raisin pea)
@@ -87,11 +77,6 @@ defmodule Schemer.ConsTheMagnificent do
 
 
   @doc """
-  `insertR`  takes three arguments: 
-  the atoms new and old, and a lat. 
-  insertR builds a lat with new inserted 
-  to the right of the first occurrence of old.
-
   (insertR 'topping 'fudge '(ice cream with fudge for desert))
   => (ice cream with fudge topping for desert)
 
@@ -116,9 +101,6 @@ defmodule Schemer.ConsTheMagnificent do
   def insertR(new, old, [h|t]), do: [h | insertR(new, old, t)]
 
    @doc """
-  `insertL` inserts the atom new to the left of the first
-   occurrence of the atom old in lat.
-
    (define insertL
      (lambda (new old l)
        (cond
@@ -134,9 +116,6 @@ defmodule Schemer.ConsTheMagnificent do
   def insertL(new, old, [h|t]), do: [h | insertL(new, old, t)]
 
   @doc """
-  `subst` replaces the first occurrence of old in
-  the lat with new.
-
   (subst 'topping 'fudge '(ice cream with fudge for desert))
   => (ice cream with topping for dessert)
 
@@ -155,9 +134,6 @@ defmodule Schemer.ConsTheMagnificent do
   def subst(new, old, [h|t]), do: [h | subst(new, old, t)]
 
   @doc """
-  `subst2` replaces either the first occurrence of o1 
-  or the first occurrence of o2 by new
-
   (subst2 `vanilla `chocolate 'banana
     `(banana ice cream with chocolate topping))
   => (vanilla ice cream with chocolate topping)

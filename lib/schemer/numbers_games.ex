@@ -26,27 +26,20 @@ defmodule Schemer.NumbersGames do
   """
 
   @doc """
+  (+ 46 12)
+  => 58
+
   (define +
     (lambda (n m)
       (cond
         ((zero? n) m)
         (else
           (add1 (+ (sub1 n) m))))))
-
-  (+ 46 12)
-  => 58
   """
   def add(0, m), do: m
   def add(n, m), do: 1 + add(n-1, m)
 
   @doc """
-  (define -
-    (lambda (n m)
-      (cond
-        ((zero? m) n)
-        (else
-          (sub1 (- n (sub1 m)))))))
-
   (- 14 3)
   => 11
 
@@ -55,18 +48,18 @@ defmodule Schemer.NumbersGames do
 
   (- 18 25)
   => No answer. Ignore negative numbers for now.
+
+  (define -
+    (lambda (n m)
+      (cond
+        ((zero? m) n)
+        (else
+          (sub1 (- n (sub1 m)))))))
   """
   def sub(n, 0), do: n
   def sub(n, m), do: sub(n, m-1) - 1
 
   @doc """
-  (define addtup
-   (lambda (l)
-     (cond
-       ((null? l) 0)
-       (else
-         (+ (car l) (addtup (cdr l)))))))
-
   (addtup '(3 5 2 8)
   => 18
 
@@ -75,28 +68,44 @@ defmodule Schemer.NumbersGames do
 
   (addtup '())
   => 0
+
+  (define addtup
+   (lambda (l)
+     (cond
+       ((null? l) 0)
+       (else
+         (+ (car l) (addtup (cdr l)))))))
   """
   def addtup([]), do: 0
   def addtup([h|t]), do: h + addtup(t)
 
   @doc """
+  (* 5 3)
+  => 15
+
+  (* 13 4)
+  => 52
+
   (define *
     (lambda (n m)
       (cond
         ((eq? 1 m) n)
         (else
           (+ n (* n (sub1 m)))))))
-
-  (* 5 3)
-  => 15
-
-  (* 13 4)
-  => 52
   """
   def times(n, 1), do: n
   def times(n, m), do: n + times(n, m-1)
 
   @doc """
+  (tup+ '(3 6 9 11 4) '(8 5 2 0 7))
+  => (11 11 11 11 11)
+
+  (tup+ '(2 3) '(4 6))
+  => (6 9)
+
+  (tup+ '(3 7) '(4 6 8 1))
+  => (7 13 8 1)
+
   (define tup+
     (lambda (t1 t2)
       (cond
@@ -108,15 +117,6 @@ defmodule Schemer.NumbersGames do
         (else
           (cons (+ (car t1) (car t2))
             (tup+ (cdr t1) (cdr t2)))))))
-
-  (tup+ '(3 6 9 11 4) '(8 5 2 0 7))
-  => (11 11 11 11 11)
-
-  (tup+ '(2 3) '(4 6))
-  => (6 9)
-
-  (tup+ '(3 7) '(4 6 8 1))
-  => (7 13 8 1)
   """
   def addtup([], []), do: []
   def addtup(t1, []), do: t1
@@ -124,6 +124,12 @@ defmodule Schemer.NumbersGames do
   def addtup([h1|t1], [h2|t2]), do: [h1 + h2 | addtup(t1, t2)]
 
   @doc """
+  (> 12 133)
+  => #f
+
+  (> 120 11)
+  => #t
+
   (define >
     (lambda (n m)
       (cond
@@ -131,12 +137,6 @@ defmodule Schemer.NumbersGames do
         ((zero? m) #t)
         (else
           (> (sub1 n) (sub1 m))))))
-
-  (> 12 133)
-  => #f
-
-  (> 120 11)
-  => #t
   """
   def greater_than(0, 0), do: false
   def greater_than(_, 0), do: true
@@ -159,6 +159,12 @@ defmodule Schemer.NumbersGames do
   def less_than(n, m), do: less_than(n-1, m-1)
 
   @doc """
+  (= 2 3)
+  => #2
+
+  (= 9 9)
+  => #f
+
   (define =
     (lambda (n m)
       (cond
@@ -170,12 +176,6 @@ defmodule Schemer.NumbersGames do
               #f)
         (else
           (= (sub1 n) (sub1 m))))))
-
-  (= 2 3)
-  => #2
-
-  (= 9 9)
-  => #f
   """
   def equals(0, 0), do: true
   def equals(_, 0), do: false
@@ -183,13 +183,6 @@ defmodule Schemer.NumbersGames do
   def equals(n, m), do: equals(n-1, m-1)
 
   @doc """
-  (define ^
-    (lambda (n m)
-      (cond
-        ((eq? 1) m) n)
-        (else
-          (* n (^ n (sub1 m))))))
-
   (^ 1 1)
   => 1
 
@@ -198,6 +191,13 @@ defmodule Schemer.NumbersGames do
 
   (^ 5 3)
   => 125
+
+  (define ^
+    (lambda (n m)
+      (cond
+        ((eq? 1) m) n)
+        (else
+          (* n (^ n (sub1 m))))))
   """
   def power(n, 1), do: n
   def power(n, m), do: n * power(n, m-1)
@@ -214,37 +214,40 @@ defmodule Schemer.NumbersGames do
   def divide(n, m), do: 1 + divide(n-m, m)
 
   @doc """
+  (length '(hotdogs with mustard sauerkraut and pickles))
+  => 6
+
+  (length '(ham and cheese on rye))
+  => 5
+
   (define length
     (lambda (l)
       (cond
         ((null? l) 0)
         (else
           (add1 (length (cdr l)))))))
-
-  (length '(hotdogs with mustard sauerkraut and pickles))
-  => 6
-
-  (length '(ham and cheese on rye))
-  => 5
   """
   def size([]), do: 0
   def size([_|t]), do: 1 + size(t)
 
   @doc """
+  (pick 4 '(lasagna spaghetti ravioli macaroni meatball))
+  => macaroni
+
   (define pick
     (lambda (n l)
       (cond
         ((eq? 1 n) (car l))
         (else
           (pick (sub1 n) (cdr l))))))
-
-  (pick 4 '(lasagna spaghetti ravioli macaroni meatball))
-  => macaroni
   """
   def pick(1, [h|_]), do: h
   def pick(n, [_|t]), do: pick(n-1, t)
 
   @doc """
+  (rempick 3 '(hotdogs with hot mustard))
+  => (hotdogs with mustard)
+
   (define rempick
     (lambda (n l)
       (cond
@@ -252,14 +255,14 @@ defmodule Schemer.NumbersGames do
         (else
           (cons (car l)
             (rempick (sub1 n) (cdr l)))))))
-
-  (rempick 3 '(hotdogs with hot mustard))
-  => (hotdogs with mustard)
   """
   def rempick(1, [_|t]), do: t
   def rempick(n, [h|t]), do: [h | rempick(n-1, t)]
 
   @doc """
+  (no-nums '(5 pears 6 prunes 9 dates))
+  => (pears prunes dates)
+
   (define no-nums
     (lambda (l)
       (cond
@@ -269,32 +272,36 @@ defmodule Schemer.NumbersGames do
         (else
           (cons (car l)
             (no-nums (cdr l)))))))
-
-  (no-nums '(5 pears 6 prunes 9 dates))
-  => (pears prunes dates)
   """
   def nonums([]), do: []
   def nonums([h|t]) when is_number(h), do: nonums(t)
   def nonums([h|t]), do: [h | nonums(t)]
 
   @doc """
-   (define allnums
-     (lambda (l)
-       (cond
-         ((null? l) '())
-         ((number (car l))
-          (cons (car l)
-                (allnums (cdr l))))
-         (else
-           (allnums (cdr l))))))
-   (allnums '(5 pears 6 prunes 9 dates))
-   => (5 6 9)
+  (allnums '(5 pears 6 prunes 9 dates))
+  => (5 6 9)
+
+  (define allnums
+    (lambda (l)
+      (cond
+        ((null? l) '())
+        ((number (car l))
+         (cons (car l)
+               (allnums (cdr l))))
+        (else
+          (allnums (cdr l))))))
   """
   def allnums([]), do: []
   def allnums([h|t]) when is_number(h), do: [h | allnums(t)]
   def allnums([_|t]), do: allnums(t)
 
   @doc """
+  (equan? 'a 'b)
+  => #f
+
+  (equan? 'z 'z)
+  => #t
+
   (define equan?
     (lambda (a b)
       (cond
@@ -304,17 +311,17 @@ defmodule Schemer.NumbersGames do
          (#f))
         (else
           (eq? a b)))))
-
-  (equan? 'a 'b)
-  => #f
-
-  (equan? 'z 'z)
-  => #t
   """
   def equan(a, a), do: true
   def equan(_, _), do: false
 
   @doc """
+  (occur 'c '(a c d c))
+  => 2
+
+  (occur 'c '(z z top))
+  => 0
+
   (define occur
     (lambda (e l)
       (cond
@@ -323,27 +330,21 @@ defmodule Schemer.NumbersGames do
          (add1 (occur e (cdr l))))
         (else
           (occur e (cdr l))))))
-
-  (occur 'c '(a c d c))
-  => 2
-
-  (occur 'c '(z z top))
-  => 0
   """
   def occur(_, []), do: 0
   def occur(e, [e|t]), do: 1 + occur(e, t)
   def occur(e, [_|t]), do: occur(e, t)
 
   """
-  (define one?
-    (lambda (n)
-      (= n 1)))
-
   (one? 1)
   => #t
 
   (one? 9)
   => #f
+
+  (define one?
+    (lambda (n)
+      (= n 1)))
   """
   def one(1), do: true
   def one(_), do: false

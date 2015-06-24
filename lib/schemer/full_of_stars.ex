@@ -30,6 +30,14 @@ defmodule Schemer.FullOfStars do
   """
 
   @doc """
+  (rember* 'cup '((coffee) cup ((tea) cup) (and (hick)) cup))
+  => ((coffee) ((tea)) (and (hick)))
+
+  (rember* 'sauce '(((tomato sauce))
+                    ((bean) sauce)
+                    (and ((flying)) sauce))
+  => '(((tomato)) ((bean)) (and ((flying))))
+
   (define rember*
     (lambda (e l)
       (cond
@@ -44,14 +52,6 @@ defmodule Schemer.FullOfStars do
         (else
           (cons (rember* e (car l))
                 (rember* e (cdr l)))))))
-
-  (rember* 'cup '((coffee) cup ((tea) cup) (and (hick)) cup))
-  => ((coffee) ((tea)) (and (hick)))
-
-  (rember* 'sauce '(((tomato sauce))
-                    ((bean) sauce)
-                    (and ((flying)) sauce))
-  => '(((tomato)) ((bean)) (and ((flying))))
   """
   def rember_star(_, []), do: []
   def rember_star(e, [e|t]) when is_atom(e), do: rember_star(e, t)
@@ -81,20 +81,6 @@ defmodule Schemer.FullOfStars do
 
 
   @doc """
-  (define insertR*
-    (lambda (n o l)
-      (cond
-        ((null? l) '())
-        ((atom? (car l))
-         (cond
-           ((eq? (car l) o)
-            (cons o (cons n (insertR* n o (cdr l)))))
-           (else
-             (cons (car l) (insertR* n o (cdr l))))))
-       (else
-         (cons (insertR* n o (car l))
-               (insertR* n o (cdr l)))))))
-
   (insertR* 'roast 'chuck 
   '((how much (wood))
    could
@@ -108,6 +94,20 @@ defmodule Schemer.FullOfStars do
   (((chuck roast)))
   (if (a) ((wood chuck roast)))
   could chuck roast wood)
+
+  (define insertR*
+    (lambda (n o l)
+      (cond
+        ((null? l) '())
+        ((atom? (car l))
+         (cond
+           ((eq? (car l) o)
+            (cons o (cons n (insertR* n o (cdr l)))))
+           (else
+             (cons (car l) (insertR* n o (cdr l))))))
+       (else
+         (cons (insertR* n o (car l))
+               (insertR* n o (cdr l)))))))
   """
   def insert_right_star(_, _, []), do: []
   def insert_right_star(n, o, [o|t]) when is_atom(o), do: [o | [n | insert_right_star(n, o, t)]]
@@ -115,6 +115,14 @@ defmodule Schemer.FullOfStars do
   def insert_right_star(n, o, [car = [_h|_t]|t]), do: [insert_right_star(n, o, car) | insert_right_star(n, o, t)]
 
   @doc """
+  (occur* 'banana '((banana)
+  (split ((((banana ice)))
+  (cream (banana))
+  sherbet)) (banana)
+  (bread)
+  (banana brandy)))
+  => 5
+
   (define occur*
     (lambda (a l)
      (cond
@@ -128,14 +136,6 @@ defmodule Schemer.FullOfStars do
        (else 
          (+ (occur* a (car l))
             (occur* a (cdr l)))))))
-
-  (occur* 'banana '((banana)
-  (split ((((banana ice)))
-  (cream (banana))
-  sherbet)) (banana)
-  (bread)
-  (banana brandy)))
-  => 5
   """
   def occur_star(_, []), do: 0
   def occur_star(a, [a|t]) when is_atom(a), do: 1 + occur_star(a, t)
@@ -143,6 +143,21 @@ defmodule Schemer.FullOfStars do
   def occur_star(a, [h|t]) when is_list(h), do: occur_star(a, h) + occur_star(a, t)
 
   @doc """
+  (subst* 'orange 'banana
+  '((banana)
+  (split ((((banana ice))) (cream (banana))
+  sherbet)) (banana)
+  (bread)
+  (banana brandy)))
+
+  =>
+  ((orange)
+    (split ((((orange ice)))
+    (cream (orange))
+    sherbet)) (orange)
+    (bread)
+    (orange brandy))
+
   (define subst*
     (lambda (n o l)
       (cond
@@ -157,21 +172,6 @@ defmodule Schemer.FullOfStars do
         (else
           (cons (subst* n o (car l))
                 (subst* n o (cdr l)))))))
-
-  (subst* 'orange 'banana
-  '((banana)
-  (split ((((banana ice))) (cream (banana))
-  sherbet)) (banana)
-  (bread)
-  (banana brandy)))
-
-  => 
-  ((orange)
-  (split ((((orange ice)))
-  (cream (orange))
-  sherbet)) (orange)
-  (bread)
-  (orange brandy))
   """
   def subst_star(_, _, []), do: []
   def subst_star(n, o, [o|t]) when is_atom(o), do: [n | subst_star(n, o, t)]
@@ -179,6 +179,14 @@ defmodule Schemer.FullOfStars do
   def subst_star(n, o, [h|t]), do: [subst_star(n, o, h) | subst_star(n, o, t)]
 
   @doc """
+  (insertL* 'pecker 'chuck '((how much (wood)) could
+  ((a (wood) chuck)) (((chuck)))
+  (if (a) ((wood chuck))) could chuck wood))
+  => ((how much (wood))
+  could
+  ((a (wood) peeker chuck)) (((peeker chuck)))
+  (if (a) ((wood peeker chuck))) could peeker chuck wood)
+
   (define insertL*
     (lambda (n o l)
       (cond
@@ -193,14 +201,6 @@ defmodule Schemer.FullOfStars do
         (else
           (cons (insertL* n o (car l))
                 (insertL* n o (cdr l)))))))
-
-  (insertL* 'pecker 'chuck '((how much (wood)) could
-  ((a (wood) chuck)) (((chuck)))
-  (if (a) ((wood chuck))) could chuck wood))
-  => ((how much (wood))
-  could
-  ((a (wood) peeker chuck)) (((peeker chuck)))
-  (if (a) ((wood peeker chuck))) could peeker chuck wood)
   """
   def insert_left_star(_, _, []), do: []
   def insert_left_star(n, o, [o|t]) when is_atom(o), do: [n | [o | insert_left_star(n, o, t)]]
@@ -208,6 +208,9 @@ defmodule Schemer.FullOfStars do
   def insert_left_star(n, o, [h|t]), do: [insert_left_star(n, o, h) | insert_left_star(n, o, t)]
 
   @doc """
+  (member* 'chips '((potato) (chips ((with) fish) (chips))))
+  => #t
+
   (define member*
     (lambda (a l)
       (cond
@@ -220,9 +223,6 @@ defmodule Schemer.FullOfStars do
         (else
           (or (member* a (car l))
               (member* a (cdr l)))))))
-
-  (member* 'chips '((potato) (chips ((with) fish) (chips))))
-  => #t
   """
   def member_star(_, []), do: false
   def member_star(a, [a|_]) when is_atom(a), do: true
@@ -230,14 +230,6 @@ defmodule Schemer.FullOfStars do
   def member_star(a, [h|t]), do: member_star(a, h) || member_star(a, t)
 
   @doc """
-  (define leftmost
-    (lambda (l)
-      (cond
-        ((atom? (car l))
-         (car l))
-        (else
-          (leftmost (car l))))))
-
   (leftmost '((potato) (chips ((with) fish) (chips))))
   => potato
 
@@ -249,11 +241,34 @@ defmodule Schemer.FullOfStars do
 
   (leftmost '())
   => no answer
+
+  (define leftmost
+    (lambda (l)
+      (cond
+        ((atom? (car l))
+         (car l))
+        (else
+          (leftmost (car l))))))
   """
   def leftmost([h|_]) when is_atom(h), do: h
   def leftmost([h|_]), do: leftmost(h)
 
    @doc """
+  (eqlist? '(strawberry ice cream) '(strawberry ice cream))
+  => #t
+
+  (eqlist? '(strawberry ice cream) '(strawberry cream ice))
+  => #f
+
+  (eqlist? '(banana ((split))) '((banana (split))))
+  => #f
+
+  (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((salami)) (and (soda))))
+  => #f
+
+  (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((sausage)) (and (soda))))
+  => #t
+
    (define eqlist?
      (lambda (l1 l2)
        (cond
@@ -271,22 +286,6 @@ defmodule Schemer.FullOfStars do
          (else
            (and (eqlist? (car l1) (car l2)) 
                 (eqlist? (cdr l2) (cdr l2)))))))
-
-
-  (eqlist? '(strawberry ice cream) '(strawberry ice cream))
-  => #t
-
-  (eqlist? '(strawberry ice cream) '(strawberry cream ice))
-  => #f
-
-  (eqlist? '(banana ((split))) '((banana (split))))
-  => #f
-
-  (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((salami)) (and (soda))))
-  => #f
-
-  (eqlist? '(beef ((sausage)) (and (soda))) '(beef ((sausage)) (and (soda))))
-  => #t
   """
   def eqlist([], []), do: true
   def eqlist(_, []), do: false

@@ -10,6 +10,18 @@ defmodule Schemer.Shadows do
   """
 
   @doc """
+  (numbered? '(1 + 1))
+  => #t
+
+  (numbered? 1)
+  => #t
+
+  (numbered? '(3 + (4 * 5)))
+  => #t
+
+  (numbered? '(3 * sausage))
+  => #f
+
   (define numbered?
     (lambda (e)
       (cond
@@ -22,18 +34,6 @@ defmodule Schemer.Shadows do
                     (eq? (car (cdr e)) '^))
                 (or (number? (car (cdr (cdr e))))
                     (numbered? (car (cdr (cdr e))))))))))
-
-  (numbered? '(1 + 1))
-  => #t
-
-  (numbered? 1)
-  => #t
-
-  (numbered? '(3 + (4 * 5)))
-  => #t
-
-  (numbered? '(3 * sausage))
-  => #f
   """
   def numbered([left, operator, right]) do
     numbered(left) && valid_operator(operator) && numbered(right)
@@ -47,20 +47,6 @@ defmodule Schemer.Shadows do
   defp valid_operator(_), do: false
 
   @doc """
-  (define value
-  (lambda (nexp)
-    (cond
-      ((atom? nexp) nexp)
-      ((eq? (car (cdr nexp)) '+)
-       (+ (value (car nexp))
-          (value (car (cdr (cdr nexp))))))
-      ((eq? (car (cdr nexp)) '*)
-       (* (value (car nexp))
-          (value (car (cdr (cdr nexp))))))
-      (else
-         (pow (value (car nexp))
-              (value (car (cdr (cdr nexp)))))))))
-
   (value 13)
   => 13
 
@@ -69,6 +55,20 @@ defmodule Schemer.Shadows do
 
   (value '(1 + (3 ^ 4)))
   => 82
+
+  (define value
+    (lambda (nexp)
+      (cond
+        ((atom? nexp) nexp)
+        ((eq? (car (cdr nexp)) '+)
+         (+ (value (car nexp))
+            (value (car (cdr (cdr nexp))))))
+        ((eq? (car (cdr nexp)) '*)
+         (* (value (car nexp))
+            (value (car (cdr (cdr nexp))))))
+        (else
+           (pow (value (car nexp))
+                (value (car (cdr (cdr nexp)))))))))
   """
   def value([l, :+, r]), do: value(l) + value(r)
   def value([l, :*, r]), do: value(l) * value(r)

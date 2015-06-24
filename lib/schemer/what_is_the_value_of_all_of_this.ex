@@ -16,6 +16,12 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
   def extend_table(e, table), do: [e | table]
 
   @doc """
+  (lookup-in-entry
+    'entree
+    '((appetizer entree beverage) (food tastes good))
+    (lambda (x) (print "error")))
+  => tastes
+
   (define lookup-in-entry
     (lambda (name entry entry-f)
       (lookup-in-entry-help name
@@ -32,12 +38,6 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
         (else
           (lookup-in-entry-help target
             (cdr keys) (cdr values) error-function)))))
-
-  (lookup-in-entry
-    'entree
-    '((appetizer entree beverage) (food tastes good))
-    (lambda (x) (print "error")))
-  => tastes
   """
   def lookup_in_entry(name, [keys, values], error_function) do
     lookup_in_entry_help(name, keys, values, error_function)
@@ -56,6 +56,12 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
   end
 
   @doc """
+  (lookup-in-table 'foo
+    '(((foo bar)(42 2))
+      ((foo bizz)(7 11))) 
+    (lambda (x) (print "error")))
+  => 42
+
   (define lookup-in-table
     (lambda (name table table-f)
       (cond
@@ -66,12 +72,6 @@ defmodule Schemer.WhatIsTheValueOfAllOfThis do
             (lambda (name)
               (lookup-in-table name (cdr table)
                 table-f)))))))
-
-  (lookup-in-table 'foo
-    '(((foo bar)(42 2))
-      ((foo bizz)(7 11))) 
-    (lambda (x) (print "error")))
-  => 42
   """
   def lookup_in_table(name, [], table_f), do: table_f.(name)
   def lookup_in_table(name, [entry|rest_of_table], table_f) do

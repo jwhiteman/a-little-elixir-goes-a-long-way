@@ -16,6 +16,12 @@ defmodule Schemer.AndAgain do
   """
 
   @doc """
+  (looking 'caviar '(6 2 4 caviar 5 7 3))
+  => #t
+
+  (looking 'caviar '(6 2 grits caviar 5 7 3))
+  => #f
+
   (define looking
     (lambda (a lat)
       (keep-looking a (pick 1 lat) lat)))
@@ -27,12 +33,6 @@ defmodule Schemer.AndAgain do
          (keep-looking a (pick sorn lat) lat))
         (else
           (eq? sorn a)))))
-
-  (looking 'caviar '(6 2 4 caviar 5 7 3))
-  => #t
-
-  (looking 'caviar '(6 2 grits caviar 5 7 3))
-  => #f
   """
   def looking(a, lat), do: keep_looking(a, pick(1, lat), lat)
 

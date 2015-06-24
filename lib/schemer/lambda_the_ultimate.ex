@@ -16,6 +16,15 @@ defmodule Schemer.LambdaTheUltimate do
   """
 
   @doc """
+  (rember-f = 5 '(6 2 5 3))
+  => (6 2 3)
+
+  (rember-f eq? 'jelly '(jelly beans are good))
+  => (beans are good)
+
+  (rember-f equal? '(pop corn) '(lemonade (pop corn) and (cake)))
+  => (lemonde and (cake))
+
   (define rember-f
     (lambda (test? a l)
      (cond
@@ -25,15 +34,6 @@ defmodule Schemer.LambdaTheUltimate do
        (else
          (cons (car l)
            (rember-f test? a (cdr l)))))))
-
-  (rember-f = 5 '(6 2 5 3))
-  => (6 2 3)
-
-  (rember-f eq? 'jelly '(jelly beans are good))
-  => (beans are good)
-
-  (rember-f equal? '(pop corn) '(lemonade (pop corn) and (cake)))
-  => (lemonde and (cake))
   """
   def rember_f(_, _, []), do: []
   def rember_f(f, a, [h|t]) do
@@ -78,6 +78,9 @@ defmodule Schemer.LambdaTheUltimate do
   end
 
   @doc """
+  ((insertL-f eq?) 'a 'c '(c d c))
+  => (a c d c)
+
   (define insertL-f
     (lambda (test?)
       (lambda (n o l)
@@ -88,9 +91,6 @@ defmodule Schemer.LambdaTheUltimate do
           (else
             (cons (car l)
               ((insertL-f test?) n o (cdr l))))))))
-
-  ((insertL-f eq?) 'a 'c '(c d c))
-  => (a c d c)
   """
   def insertL_f(test_fn) do
     fn (_, _, []) -> []
@@ -103,6 +103,9 @@ defmodule Schemer.LambdaTheUltimate do
   end
 
   @doc """
+  ((insertR-f eq?) 'c 'a '(a d c))
+  => (a c d c)
+
   (define insertR-f
     (lambda (test?)
       (lambda (n o l)
@@ -113,9 +116,6 @@ defmodule Schemer.LambdaTheUltimate do
           (else
             (cons (car l)
                   ((insertR-f test?) n o (cdr l))))))))
-
-  ((insertR-f eq?) 'c 'a '(a d c))
-  => (a c d c)
   """
   def insertR_f(test_fn) do
     fn (_, _, []) -> []
@@ -161,29 +161,32 @@ defmodule Schemer.LambdaTheUltimate do
   end
 
   @doc """
-  (define seqS (lambda (n o l) (cons n l)))
-  (define subst (insert-g seqS))
-
   (subst 'elixir 'erlang '(my other erlang is an elixir))
   => (my other elixir is an erlang)
+
+  (define seqS (lambda (n o l) (cons n l)))
+  (define subst (insert-g seqS))
   """
   def seqS(n, _, l), do: [n | l]
   def subst(n, o, l), do: insert_g(&seqS/3).(n, o, l)
 
   @doc """
+  (rember 'worm '(apple apple worm apple))
+  => '(apple apple apple)
+
   (define seqrem (lambda (n o l) l))
 
   (define rember
     (lambda (n l)
       ((insert-g seqrem) #f n l))))
-
-  (rember 'worm '(apple apple worm apple))
-  => '(apple apple apple)
   """
   def seqrem(_, _, l), do: l
   def rember(a, l), do: insert_g(&seqrem/3).(nil, a, l)
 
   @doc """
+  (value '(1 + (3 * 4)))
+  => 13
+
   (define atom-to-function
     (lambda (x)
       (cond
@@ -199,9 +202,6 @@ defmodule Schemer.LambdaTheUltimate do
           ((atom-to-function (operator nexp))
            (value (1st-sub-expression nexp))
            (value (2nd-sub-expression nexp)))))))
-
-  (value '(1 + (3 * 4)))
-  => 13
   """
   def atom_to_function(:+), do: &add/2
   def atom_to_function(:*), do: &times/2
@@ -223,6 +223,9 @@ defmodule Schemer.LambdaTheUltimate do
   defp times(n, m), do: n * m
 
   @doc """
+  ((multirember-f eq?) (quote c) (quote (a c d c)))
+  => (a d)
+
   (define multirember-f
     (lambda (test?)
       (lambda (a l)
@@ -233,9 +236,6 @@ defmodule Schemer.LambdaTheUltimate do
           (else
             (cons (car l)
               ((multirember-f test?) a (cdr l))))))))
-
-  ((multirember-f eq?) (quote c) (quote (a c d c)))
-  => (a d)
   """
   def multirember_f(test) do
     fn (_, [])    -> []
@@ -253,6 +253,9 @@ defmodule Schemer.LambdaTheUltimate do
   def multirember_eq, do: multirember_f(&equal/2)
 
   @doc """
+  ((multiremberT eq?-tuna) (quote (shrimp salad tuna salad and tuna)))
+  => (shrimp salad salad and)
+
   (define eq?-tuna
     (eq?-c (quote tuna)))
 
@@ -266,9 +269,6 @@ defmodule Schemer.LambdaTheUltimate do
           (else
             (cons (car l)
               ((multiremberT test) (cdr l))))))))
-
-  ((multiremberT eq?-tuna) (quote (shrimp salad tuna salad and tuna)))
-  => (shrimp salad salad and)
   """
   def eq_tuna, do: eq_c(:tuna)
 
@@ -289,6 +289,9 @@ defmodule Schemer.LambdaTheUltimate do
   answer is true are collected in a second list _seen_. Finally,
   it determines the value of (col newlat seen).
 
+  (multirember&co 'a '(x y z a b a a a c) (lambda (x y) (cons x (cons y (quote ())))))
+  => ((x y z b c) (a a a a))
+
   (define multirember&co
     (lambda (a lat col)
       (cond
@@ -301,9 +304,6 @@ defmodule Schemer.LambdaTheUltimate do
           (multirember&co a (cdr lat)
             (lambda (newlat seen)
              (col (cons (car lat) newlat) seen)))))))
-
-  (multirember&co 'a '(x y z a b a a a c) (lambda (x y) (cons x (cons y (quote ())))))
-  => ((x y z b c) (a a a a))
   """
   def multirember_and_co(_, [], col), do: col.([], [])
   def multirember_and_co(a, [a|t], col) do
@@ -314,6 +314,9 @@ defmodule Schemer.LambdaTheUltimate do
   end
 
   @doc """
+  (multiinsertLR 'zap 'l 'r '(l x r x))
+  => (zap l x r zap x)
+
   (define multiinsertLR
     (lambda (new oldL oldR lat)
       (cond
@@ -325,9 +328,6 @@ defmodule Schemer.LambdaTheUltimate do
         (else
           (cons (car lat)
             (multiinsertLR new oldL oldR (cdr lat)))))))
-
-  (multiinsertLR 'zap 'l 'r '(l x r x))
-  => (zap l x r zap x)
   """
   def multiinsertLR(_, _, _, []), do: []
   def multiinsertLR(n, oldl, oldr, [oldl|t]) do
@@ -341,6 +341,10 @@ defmodule Schemer.LambdaTheUltimate do
   end
 
   @doc """
+  (multiinsertLR&co 'zap 'l 'r '(l x r x r l r)
+     (lambda (lc rc) (cons lc (cons rc (quote ())))))
+  => (2 3)
+
   (define multiinsertLR&co
     (lambda (new oldL oldR lat col)
       (cond
@@ -355,10 +359,6 @@ defmodule Schemer.LambdaTheUltimate do
              (col left (add1 right)))))
         (else
           (multiinsertLR&co new oldL oldR (cdr lat) col)))))
-
-  (multiinsertLR&co 'zap 'l 'r '(l x r x r l r)
-     (lambda (lc rc) (cons lc (cons rc (quote ())))))
-  => (2 3)
   """
   def multiinsertLR_and_co(_, _, _, [], col) do
     col.(0, 0)
@@ -381,6 +381,9 @@ defmodule Schemer.LambdaTheUltimate do
   end
 
   @doc """
+  (evens-only* (quote ((9 1 2 8) 3 10 ((9 9) 7 6) 2)))
+  => ((2 8) 10 (() 6) 2)
+
   (define evens-only*
     (lambda (l)
       (cond
@@ -393,8 +396,6 @@ defmodule Schemer.LambdaTheUltimate do
         (else
           (cons (evens-only* (car l))
                 (evens-only* (cdr l)))))))
-   (evens-only* (quote ((9 1 2 8) 3 10 ((9 9) 7 6) 2)))
-   => ((2 8) 10 (() 6) 2)
   """
   def evens_only_star([]), do: []
   def evens_only_star([h=[_|_]|t]), do: [evens_only_star(h) | evens_only_star(t)]
@@ -405,6 +406,11 @@ defmodule Schemer.LambdaTheUltimate do
   evens-only*&co builds a nested list of even numbers by removing the odd
   ones from its argument list and simultaneously multiplies the even numbers
   and sums up the odd numbers that occur in its argument.
+
+  (evens-only*&co 
+    (quote ((9 1 2 8) 3 10 ((9 9) 7 6) 2))
+    (lambda (x y z) (cons x (cons y (cons z (quote ()))))))
+  => (((2 8) 10 (() 6) 2) 1920 38)
 
   (define evens-only*&co
     (lambda (l col)
@@ -430,10 +436,6 @@ defmodule Schemer.LambdaTheUltimate do
                   (col (cons car-result cdr-result)
                        (* car-product cdr-product)
                        (+ car-sum cdr-sum))))))))))
-  (evens-only*&co 
-    (quote ((9 1 2 8) 3 10 ((9 9) 7 6) 2))
-    (lambda (x y z) (cons x (cons y (cons z (quote ()))))))
-  => (((2 8) 10 (() 6) 2) 1920 38)
   """
   def evens_only_star_and_co([], col), do: col.([], 1, 0)
   def evens_only_star_and_co([h=[_|_]|t], col) do
