@@ -1,5 +1,6 @@
 # Chapter 8.
 defmodule Schemer.LambdaTheUltimate do
+
   import Schemer.Shadows, only: [
     operator_for: 1,
     first_sub_expression: 1,

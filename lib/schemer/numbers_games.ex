@@ -1,5 +1,6 @@
 # Chapter 4
 defmodule Schemer.NumbersGames do
+
   @moduledoc """
   The First Commandment: When recurring on a list
   of atoms, _lat_, ask two questions about it: `(null? lat)`

@@ -1,5 +1,6 @@
 # Chapter 5
 defmodule Schemer.FullOfStars do
+
   @moduledoc """
   The First Commandment (_final version_):
 

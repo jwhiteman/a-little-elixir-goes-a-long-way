@@ -1,5 +1,6 @@
 # Chapter 10.
 defmodule Schemer.WhatIsTheValueOfAllOfThis do
+
   import Schemer.FriendsAndRelations, only: [
     build: 2,
     first: 1,
