@@ -375,7 +375,7 @@ defmodule Schemer.LambdaTheUltimate do
       fn (left, right) -> col.(left, right + 1) end
     )
   end
-  def multiinsertLR_and_co(new, oldL, oldR, [h|t], col) do
+  def multiinsertLR_and_co(new, oldL, oldR, [_|t], col) do
     multiinsertLR_and_co(new, oldL, oldR, t, col)
   end
 
