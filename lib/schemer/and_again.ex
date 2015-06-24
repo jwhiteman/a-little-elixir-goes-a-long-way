@@ -2,10 +2,9 @@
 defmodule Schemer.AndAgain do
 
   import Schemer.NumbersGames, only: [pick: 2]
+  import Schemer.FriendsAndRelations, only: [build: 2, first: 1, second: 1]
 
   @moduledoc """
-  shift
-  align
   length*
   weight*
   shuffle
@@ -55,6 +54,13 @@ defmodule Schemer.AndAgain do
 
   (shift '((a b) (c d)))
   => (a (b (c d)))
+
+  (define shift
+    (lambda (pair)
+      (build (first (first pair))
+        (build (second (first pair))
+          (second pair)))))
   """
+  def shift([[f1, f2], s2]), do: build(f1, build(f2, s2))
 
 end
