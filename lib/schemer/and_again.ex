@@ -4,16 +4,6 @@ defmodule Schemer.AndAgain do
   import Schemer.NumbersGames, only: [pick: 2]
   import Schemer.FriendsAndRelations, only: [build: 2, first: 1, second: 1]
 
-  @moduledoc """
-  length*
-  weight*
-  shuffle
-  C
-  A
-  last-try
-  Y
-  """
-
   @doc """
   (looking 'caviar '(6 2 4 caviar 5 7 3))
   => #t
@@ -62,5 +52,20 @@ defmodule Schemer.AndAgain do
           (second pair)))))
   """
   def shift([[f1, f2], s2]), do: build(f1, build(f2, s2))
+
+  @doc """
+  (define Y
+    (lambda (le)
+      ((lambda (f) (f f))
+       (lambda (f)
+         (le (lambda (x) ((f f) x)))))))
+  """
+  def y(le) do
+    fn (f) -> f.(f) end.(
+      fn(f) ->
+        le.( fn(x) -> f.(f).(x) end )
+      end
+    )
+  end
 
 end

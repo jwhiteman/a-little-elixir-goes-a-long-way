@@ -12,4 +12,14 @@ defmodule AndAgainTest do
     assert shift([[1, 2], 3]) == [1, [2, 3]]
     assert shift([[1, 2], [3, 4]]) == [1, [2, [3, 4]]]
   end
+
+  test "Y" do
+    assert y(
+      fn (m) ->
+        fn (0) -> 1
+           (n) -> n * m.(n - 1)
+        end
+      end
+    ).(10) == 3628800
+  end
 end
