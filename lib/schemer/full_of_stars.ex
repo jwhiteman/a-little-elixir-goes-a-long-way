@@ -13,7 +13,7 @@ defmodule Schemer.FullOfStars do
   When recurring on a list of S-expressions, _l_, ask three questions about it:
   `(null? l)`, `(atom? (car l))`, and `else`.
 
-  The Fourth Commandement (_final version_):
+  The Fourth Commandment (_final version_):
 
   Always change at least one argument while recurring. When recurring on a list
   of atoms, _lat_, use `(cdr lat)`. When recurring on a number, _n_, use `(sub1 n)`.
