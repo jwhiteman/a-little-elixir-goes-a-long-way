@@ -64,7 +64,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThisTest do
   end
 
   test "atom_to_action returns const_action for nums, bools, and build-in methods" do
-    assert atom_to_action(:car)   == &const_action/2
+    assert atom_to_action(:car) == &const_action/2
   end
 
   test "atom_to_action returns identifier_action for everything else" do

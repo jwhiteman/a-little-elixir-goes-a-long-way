@@ -67,7 +67,7 @@ defmodule LambdaTheUltimateTest do
     assert multirember_and_co(
       :a,
       [:x, :y, :z, :a, :b, :a, :a, :a, :c], 
-      &( [&1 | [&2 | []]] )
+      &( [&1, &2 | []] )
    ) == [[:x, :y, :z, :b, :c], [:a, :a, :a, :a]]
 
    assert multirember_and_co(

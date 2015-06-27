@@ -110,7 +110,7 @@ defmodule Schemer.FullOfStars do
                (insertR* n o (cdr l)))))))
   """
   def insert_right_star(_, _, []), do: []
-  def insert_right_star(n, o, [o|t]) when is_atom(o), do: [o | [n | insert_right_star(n, o, t)]]
+  def insert_right_star(n, o, [o|t]) when is_atom(o), do: [o , n | insert_right_star(n, o, t)]
   def insert_right_star(n, o, [h|t]) when is_atom(h), do: [h | insert_right_star(n, o, t)]
   def insert_right_star(n, o, [car = [_h|_t]|t]), do: [insert_right_star(n, o, car) | insert_right_star(n, o, t)]
 
@@ -203,7 +203,7 @@ defmodule Schemer.FullOfStars do
                 (insertL* n o (cdr l)))))))
   """
   def insert_left_star(_, _, []), do: []
-  def insert_left_star(n, o, [o|t]) when is_atom(o), do: [n | [o | insert_left_star(n, o, t)]]
+  def insert_left_star(n, o, [o|t]) when is_atom(o), do: [n, o | insert_left_star(n, o, t)]
   def insert_left_star(n, o, [h|t]) when is_atom(h), do: [h | insert_left_star(n, o, t)]
   def insert_left_star(n, o, [h|t]), do: [insert_left_star(n, o, h) | insert_left_star(n, o, t)]
 

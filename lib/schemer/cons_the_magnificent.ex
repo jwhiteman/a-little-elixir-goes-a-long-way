@@ -187,7 +187,7 @@ defmodule Schemer.ConsTheMagnificent do
                 (multiinsertR new old (cdr l)))))))
   """
   def multiinsertR(_, _, []), do: []
-  def multiinsertR(new, old, [old|t]), do: [old | [new | multiinsertR(new, old, t)]]
+  def multiinsertR(new, old, [old|t]), do: [old, new | multiinsertR(new, old, t)]
   def multiinsertR(new, old, [h|t]), do: [h | multiinsertR(new, old, t)]
 
   @doc """

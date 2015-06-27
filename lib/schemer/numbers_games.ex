@@ -335,7 +335,7 @@ defmodule Schemer.NumbersGames do
   def occur(e, [e|t]), do: 1 + occur(e, t)
   def occur(e, [_|t]), do: occur(e, t)
 
-  """
+  @doc """
   (one? 1)
   => #t
 

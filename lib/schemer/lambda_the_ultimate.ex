@@ -150,8 +150,8 @@ defmodule Schemer.LambdaTheUltimate do
   ((insert-g seqR) 'c 'a '(a d c))
   ((insert-g seqL) 'a 'c '(c d c))
   """
-  def seqL(n, o, l), do: [n | [o | l]]
-  def seqR(n, o, l), do: [o | [n | l]]
+  def seqL(n, o, l), do: [n, o | l]
+  def seqR(n, o, l), do: [o, n | l]
 
   def insert_g(insert_strategy) do
     fn (_, _, [])    -> []
