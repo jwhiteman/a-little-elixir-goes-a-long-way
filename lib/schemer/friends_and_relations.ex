@@ -195,13 +195,13 @@ defmodule Schemer.FriendsAndRelations do
 
   (define first (lambda (l) (car l)))
   (define second (lambda (l) (car (cdr l))))
-  (define build (lambda (s1 s2) (cons s1 (cons s2 '()))))
   (define third (lambda (l) (car (cdr (cdr l)))))
+  (define build (lambda (s1 s2) (cons s1 (cons s2 '()))))
   """
   def first([f|_]), do: f
   def second([_,s|_]), do: s
   def third([_,_,t|_]), do: t
-  def build(s1, s2), do: [s1, s2 | []]
+  def build(s1, s2), do: [s1, s2]
 
   @doc """
   (fun? '((a b) (c d) (d b)))
