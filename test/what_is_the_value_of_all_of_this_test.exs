@@ -34,7 +34,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThisTest do
     refute const_action(false, empty_table)
   end
 
-  test "const_action returns labled primitives" do
+  test "const_action returns labeled primitives" do
     assert const_action(:car, empty_table) == [:primitive, :car]
   end
 
@@ -52,7 +52,7 @@ defmodule Schemer.WhatIsTheValueOfAllOfThisTest do
     end
   end
 
-  test "lambda returns labled non-primitives" do
+  test "lambda returns labeled non-primitives" do
     assert lambda_action([:lambda, [:x], [:add1, :x]], empty_table) ==
       [:non_primitive, [empty_table, [:x], [:add1, :x]]]
   end
