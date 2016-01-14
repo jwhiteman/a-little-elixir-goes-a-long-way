@@ -1,6 +1,5 @@
 # Chapter 1.
 defmodule Schemer.Toys do
-  # http://is.gd/2vteZJ
 
   @doc """
   The Law of Car: The primitive _car_ is defined only for non-empty lists.

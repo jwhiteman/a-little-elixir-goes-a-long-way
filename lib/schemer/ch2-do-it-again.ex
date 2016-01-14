@@ -1,6 +1,6 @@
 # Chapter 2
 defmodule Schemer.DoItAgain do
-  # http://is.gd/sJXZCi
+  # You go back, Jack, do it again...
 
   @moduledoc """
   The First Commandment (preliminary): Always ask _null?_ as the first question in
